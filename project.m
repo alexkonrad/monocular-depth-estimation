@@ -9,7 +9,8 @@
 
 %% Load image
 
-RGB = imread('images/road.jpeg');
+RGB = imread('images/test3.png');
+
 YCBCR = im2double(rgb2ycbcr(RGB));
 
 % Trim the image so that it is divisible into four
@@ -18,15 +19,29 @@ YCBCR = YCBCR(1:floor(size(YCBCR,1)/4)*4,:,:);
 
 %% Display RGB image
 
-% figure
-% imshow(RGB);
-% title('Image in RGB Color Space');
+figure
+imshow(RGB);
+title('Image in RGB Color Space');
 
 %% Display YCBCR image
 
 figure
 imshow(YCBCR(:,:,1));
 title('Image in YCBCR Color Space');
+
+%% Load Depth Data
+
+RGBDEPTH = imread('depth/depth-test3.png');
+D = rescale(rgb2gray(RGBDEPTH));
+
+%% Show depth image
+
+figure
+imshow(D);
+title('Depth data');
+
+% load('depth/test2.mat');
+% D = Position3DGrid(:,:,4);
 
 %% Compute filterbanks
 

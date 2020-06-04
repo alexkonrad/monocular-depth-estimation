@@ -50,6 +50,8 @@ for i=D*15+1:D:D*19
   end
 end
 
-xRel=zeros(1,1);
+
+[~,~,yis] = histcounts(X, 10);
+xRel = yis;
 end
 
