@@ -12,7 +12,7 @@ function [f0,f1,f2,f3,f4] = neighborFilters(patchSize)
 %    f4: Right patch
 
 Z = zeros(patchSize,patchSize);
-O = ones(patchSize,patchSize);
+O = ones(patchSize,patchSize)/patchSize;
 
 f0 = [
   Z Z Z

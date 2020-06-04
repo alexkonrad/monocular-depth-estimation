@@ -10,7 +10,7 @@ function [f1,f2,f3,f4] = columnFilters(H)
 %    f3: Middle-bottom quartile
 %    f4: Bottom quartile
 Z = zeros(floor(H/4), 1);
-O = ones(floor(H/4), 1);
+O = ones(floor(H/4), 1) / floor(H/4);
 
 f1 = [O;Z;Z;Z];
 f2 = [Z;O;Z;Z];
