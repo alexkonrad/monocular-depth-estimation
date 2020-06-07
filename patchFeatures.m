@@ -62,45 +62,17 @@ for i = 1:px
   xAbs(i,:,m:m+33) = repmat(sum(cols{i,4},1:2),1,py); m = m+34;
 end
 
-% Relative feature vector.
-% y_is is the 17-dimensional feature at patch i at scale s
-% y_is as a histogram with 10 bins, so 170-dimensional) 
-% for l = 0:2
-%   for i = 1:px
-%     for j = 1:py
-%       for k = 0:16
-%         offset = 170*l;
-%         startIndex = offset+(k*10)+1;
-%         endIndex = startIndex+9;
-%         feat = xAbs(i,j,offset+k+1);
-%         fprintf("%3d,%3d:%4d-%4d\n", i,j, startIndex,endIndex);
-%         xRel(i,j,startIndex:endIndex) = histcounts(feat, 10);
-%       end
-%     end
-%   end
-% end
-
-
-xRel = zeros(size(xAbs,1),size(xAbs,2),170*3);
-
 % Compute relative feature vector by binning each of 17 features into
-% 10 bins at each scale. Need offset to skip over neighboring patches.
-% Before we compute the histograms for each patch, we need to compute
-% the ten bin edges for each feature to make the comparison between
-% patches equal.
-for offset = [0 170 340]
-  for k = 0:16
-    imFeat = xAbs(:,:,offset+k+1);
-    [~,edges] = histcounts(imFeat,10);
-    for i = 1:px
-      for j = 1:py
-        startIndex = offset+(k*10)+1;
-        endIndex = startIndex+9;
-        patchFeat = xAbs(i,j,offset+k+1);
-        xRel(i,j,startIndex:endIndex) = histcounts(patchFeat,edges);
-      end
-    end
+% 10 bins at each scale.
+offsets = [0 170 340];
+for i = 1:3
+  for k = 1:17
+    imFeat = xAbs(:,:,offsets(i)+k);
+    [~,~,bins] = histcounts(imFeat,10);
+    [y,x,val] = find(bins);
+    xRel{i,k} = zeros(max(y),max(x),'int8');
+    idx = sub2ind(size(xRel{i,k}), y, x);
+    xRel{i,k}(idx)=val;
   end
 end
 end
-
