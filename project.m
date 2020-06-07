@@ -64,7 +64,7 @@ tic;
 X = pixelFeatures(YCBCR);
 toc;
 tic;
-[xAbs,xRel] = patchFeatures(X, YCBCR, 10, 10);
+[xAbs,xRel] = patchFeatures(X, YCBCR, 100, 100);
 toc;
 
 %% Display filters

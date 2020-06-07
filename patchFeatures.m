@@ -22,13 +22,18 @@ YX2 = abs(YX .* YX);
 E = cat(3,YX,YX2);
 [H,W,D] = size(E);
 
-% NEW PART
+% Divide pixel-level features into patches at different resolutions 
 ca{1} = patches(E,patchWidth,patchHeight);
 ca{2} = patches(E,patchWidth*3,patchHeight*3);
 ca{3} = patches(E,patchWidth*9,patchHeight*9);
 cols = patches(E,patchWidth,floor(size(Y,1)/4));
+
+% Sum values in patch partitions and construct an absolute feature
+% vector for each patch (see Saxena et. al Figure 3).
 xAbs = zeros(size(ca{1},1),size(ca{1},2),D*19);
 k = 1;
+
+% Add scale 1x, 3x, and 9x patches
 for l = 1:size(ca,2)
   [px,py,~] = size(ca{l});
   m = k+33;
@@ -46,6 +51,8 @@ for l = 1:size(ca,2)
   xAbs(1:end-1,:,m:m+33) = xAbs(2:end,:,k:k+33); m = m+34;
   k = m;
 end
+
+% Add column patches
 [px,py,~] = size(ca{1});
 for i = 1:px
   m = k;
@@ -55,42 +62,45 @@ for i = 1:px
   xAbs(i,:,m:m+33) = repmat(sum(cols{i,4},1:2),1,py); m = m+34;
 end
 
-
-% NEW PART
-
-% Patch-level absolute feature matrix
-% xAbs = zeros(H,W,D*19);
-% 
-% [f1,f2,f3,f4,f5] = neighborFilters(1);
-% [f6,f7,f8,f9,f10] = neighborFilters(3);
-% [f11,f12,f13,f14,f15] = neighborFilters(9);
-% [f16,f17,f18,f19] = columnFilters(H);
-% 
-% F{1} = cat(3,f1,f2,f3,f4,f5);
-% F{2} = cat(3,f6,f7,f8,f9,f10);
-% F{3} = cat(3,f11,f12,f13,f14,f15);
-% F{4} = cat(3,f16,f17,f18,f19);
-
-% Compute absolute feature values for this pixel
-% Rescale image to 3 different sizes, filter for pixel and 4 neighbors.
-% compute feature values for neighboring patches
-% for i=1:D:D*15
-%   [~,j,k] = ind2sub([D 5 3], i);
-%   xAbs(:,:,i:i+D-1) = convn(E,F{k}(:,:,j),'same');
-% end
-
-% Last four features are column features, which break up every column
-% into quadrants. This computes for each quadrant all features, so adds
-% 34x4=136 features to the vector.
-% for i=D*15+1:D:D*19
-%   j = floor((i-510)/D)+1;
-%   for k=1:size(E,3)
-%     xAbs(:,:,i+k-1) = repmat(F{4}(:,:,j)'*E(:,:,k), H, 1);
+% Relative feature vector.
+% y_is is the 17-dimensional feature at patch i at scale s
+% y_is as a histogram with 10 bins, so 170-dimensional) 
+% for l = 0:2
+%   for i = 1:px
+%     for j = 1:py
+%       for k = 0:16
+%         offset = 170*l;
+%         startIndex = offset+(k*10)+1;
+%         endIndex = startIndex+9;
+%         feat = xAbs(i,j,offset+k+1);
+%         fprintf("%3d,%3d:%4d-%4d\n", i,j, startIndex,endIndex);
+%         xRel(i,j,startIndex:endIndex) = histcounts(feat, 10);
+%       end
+%     end
 %   end
 % end
 
 
-[~,~,yis] = histcounts(X, 10);
-xRel = yis;
+xRel = zeros(size(xAbs,1),size(xAbs,2),170*3);
+
+% Compute relative feature vector by binning each of 17 features into
+% 10 bins at each scale. Need offset to skip over neighboring patches.
+% Before we compute the histograms for each patch, we need to compute
+% the ten bin edges for each feature to make the comparison between
+% patches equal.
+for offset = [0 170 340]
+  for k = 0:16
+    imFeat = xAbs(:,:,offset+k+1);
+    [~,edges] = histcounts(imFeat,10);
+    for i = 1:px
+      for j = 1:py
+        startIndex = offset+(k*10)+1;
+        endIndex = startIndex+9;
+        patchFeat = xAbs(i,j,offset+k+1);
+        xRel(i,j,startIndex:endIndex) = histcounts(patchFeat,edges);
+      end
+    end
+  end
+end
 end
 
