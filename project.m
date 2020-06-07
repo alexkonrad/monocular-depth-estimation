@@ -10,12 +10,18 @@ clear
 %% Load image
 
 RGB = imread('aloe/view5.png');
-
 YCBCR = im2double(rgb2ycbcr(RGB));
+% Trim the image so that it is divisible into four vertical quantiles.
+% YCBCR = YCBCR(1:floor(size(YCBCR,1)/4)*4,:,:);
 
-% Trim the image so that it is divisible into four
-% vertical quantiles.
-YCBCR = YCBCR(1:floor(size(YCBCR,1)/4)*4,:,:);
+% ca = patches(YCBCR, 50, 50);
+% displayPatches(ca);
+% 
+% ca = patches(YCBCR, 150, 150);
+% displayPatches(ca);
+% 
+% ca = patches(YCBCR, 450, 450);
+% displayPatches(ca);
 
 %% Display RGB image
 
@@ -47,21 +53,29 @@ D = RGBDEPTH;
 % D = Position3DGrid(:,:,4);
 % figure; imshow(rescale(D));
 
+%% Resize
+
+% YCBCR = imresize(YCBCR, 1/9, 'bilinear');
+% D = imresize(D, 1/9, 'bilinear');
+
 %% Compute filterbanks
 
+tic;
 X = pixelFeatures(YCBCR);
-[xAbs,xRel] = patchFeatures(X, YCBCR);
+toc;
+tic;
+[xAbs,xRel] = patchFeatures(X, YCBCR, 10, 10);
+toc;
 
 %% Display filters
-
-idx = 1:16:646; 
-% figure
-% montage(xAbs, 'Indices', 1:17);
 figure
-montage(xAbs, 'Indices', idx(32):idx(33));
-% figure
-% montage(xAbs, 'Indices', 35:51);
-
+montage(rescale(xAbs(:,:,1:34*5)), 'Size', [10 17])
+figure
+montage(rescale(xAbs(:,:,(34*5)+1:34*10)), 'Size', [10 17])
+figure
+montage(rescale(xAbs(:,:,(34*10)+1:34*15)), 'Size', [10 17])
+figure
+montage(rescale(xAbs(:,:,(34*15)+1:end)), 'Size', [8 17])
 
 %% KITTI
 % V = "depth_selection/val_selection_cropped/";
