@@ -22,11 +22,11 @@ YX2 = abs(YX .* YX);
 E = cat(3,YX,YX2);
 [H,W,D] = size(E);
 
-% Divide pixel-level features into patches at different resolutions 
-ca{1} = patches(E,patchWidth,patchHeight);
-ca{2} = patches(E,patchWidth*3,patchHeight*3);
-ca{3} = patches(E,patchWidth*9,patchHeight*9);
-cols = patches(E,patchWidth,floor(size(Y,1)/4));
+% Divide pixel-level features into patches at different resolutions
+ca{1} = patches(E,patchHeight, patchWidth);
+ca{2} = patches(E,patchHeight*3,patchWidth*3);
+ca{3} = patches(E,patchHeight*9,patchWidth*9);
+cols = patches(E,floor(size(Y,1)/4),patchWidth);
 
 % Sum values in patch partitions and construct an absolute feature
 % vector for each patch (see Saxena et. al Figure 3).
@@ -54,12 +54,12 @@ end
 
 % Add column patches
 [px,py,~] = size(ca{1});
-for i = 1:px
+for i = 1:py
   m = k;
-  xAbs(i,:,m:m+33) = repmat(sum(cols{i,1},1:2),1,py); m = m+34;
-  xAbs(i,:,m:m+33) = repmat(sum(cols{i,2},1:2),1,py); m = m+34;
-  xAbs(i,:,m:m+33) = repmat(sum(cols{i,3},1:2),1,py); m = m+34;
-  xAbs(i,:,m:m+33) = repmat(sum(cols{i,4},1:2),1,py); m = m+34;
+  xAbs(i,:,m:m+33) = repmat(sum(cols{1,i},1:2),1,py); m = m+34;
+  xAbs(i,:,m:m+33) = repmat(sum(cols{2,i},1:2),1,py); m = m+34;
+  xAbs(i,:,m:m+33) = repmat(sum(cols{3,i},1:2),1,py); m = m+34;
+  xAbs(i,:,m:m+33) = repmat(sum(cols{4,i},1:2),1,py); m = m+34;
 end
 
 % Compute relative feature vector by binning each of 17 features into
