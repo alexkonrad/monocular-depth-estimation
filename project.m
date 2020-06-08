@@ -9,73 +9,60 @@
 clear
 %% Load image
 
-RGB = imread('aloe/view5.png');
-YCBCR = im2double(rgb2ycbcr(RGB));
+% RGB = imread('aloe/view5.png');
+% YCBCR = im2double(rgb2ycbcr(RGB));
 % Trim the image so that it is divisible into four vertical quantiles.
 % YCBCR = YCBCR(1:floor(size(YCBCR,1)/4)*4,:,:);
 
-% ca = patches(YCBCR, 50, 50);
-% displayPatches(ca);
-% 
-% ca = patches(YCBCR, 150, 150);
-% displayPatches(ca);
-% 
-% ca = patches(YCBCR, 450, 450);
-% displayPatches(ca);
+%  Display RGB image
+% figure; imshow(RGB); title('Image in RGB Color Space');
 
-%% Display RGB image
-
-% figure
-% imshow(RGB);
-% title('Image in RGB Color Space');
-
-%% Display YCBCR image
-
-% figure
-% imshow(YCBCR(:,:,1));
-% title('Image in YCBCR Color Space');
+% Display YCBCR image
+% figure; imshow(YCBCR(:,:,1)); title('Image in YCBCR Color Space');
 
 %% Load Depth Data
 
-RGBDEPTH = imread('aloe/disp5.png');
-D = RGBDEPTH;
+% RGBDEPTH = imread('aloe/disp5.png');
+% D = RGBDEPTH;
 % D = rescale(rgb2gray(RGBDEPTH));
 
-%% Show depth image
+% Show depth image
+% figure; imshow(D); title('Depth data');
 
-% figure
-% imshow(D);
-% title('Depth data');
+%% Load training data
 
-%% Depth data
+imgDir = strcat(pwd, '/Train400Img/');
+depthDir = strcat(pwd, '/Train400Depth/');
+[trainX,trainY] = loadTrainingData(imgDir,depthDir,25,570,285);
 
-% load('depth/test.mat');
-% D = Position3DGrid(:,:,4);
-% figure; imshow(rescale(D));
+%% Display images
 
-%% Resize
-
-% YCBCR = imresize(YCBCR, 1/9, 'bilinear');
-% D = imresize(D, 1/9, 'bilinear');
+for i = 1:2:4
+  subplot(10,2,i);
+  imagesc(squeeze(trainX(i,:,:,:)));
+  set(gca,'xtick',[],'xticklabel',[],'ytick',[],'yticklabel',[]);
+  axis equal;
+  subplot(10,2,i+1);
+  imagesc(squeeze(trainY(i,:,:)));
+  set(gca,'xtick',[],'xticklabel',[],'ytick',[],'yticklabel',[]);
+  axis equal;
+end
 
 %% Compute filterbanks
 
-tic;
 X = pixelFeatures(YCBCR);
-toc;
-tic;
 [xAbs,xRel] = patchFeatures(X, YCBCR, 10, 10);
-toc;
+
 
 %% Display filters
-figure
-montage(rescale(xAbs(:,:,1:34*5)), 'Size', [10 17])
-figure
-montage(rescale(xAbs(:,:,(34*5)+1:34*10)), 'Size', [10 17])
-figure
-montage(rescale(xAbs(:,:,(34*10)+1:34*15)), 'Size', [10 17])
-figure
-montage(rescale(xAbs(:,:,(34*15)+1:end)), 'Size', [8 17])
+% figure
+% montage(rescale(xAbs(:,:,1:34*5)), 'Size', [10 17])
+% figure
+% montage(rescale(xAbs(:,:,(34*5)+1:34*10)), 'Size', [10 17])
+% figure
+% montage(rescale(xAbs(:,:,(34*10)+1:34*15)), 'Size', [10 17])
+% figure
+% montage(rescale(xAbs(:,:,(34*15)+1:end)), 'Size', [8 17])
 
 %% KITTI
 % V = "depth_selection/val_selection_cropped/";
@@ -96,4 +83,10 @@ montage(rescale(xAbs(:,:,(34*15)+1:end)), 'Size', [8 17])
 %   end
 %   
 % end
+
+% Depth data
+
+% load('depth/test.mat');
+% D = Position3DGrid(:,:,4);
+% figure; imshow(rescale(D));
 

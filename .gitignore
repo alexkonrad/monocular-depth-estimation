@@ -2,4 +2,6 @@ devkit/
 images/
 depth/
 depth_selection/
+Train400Img/
+Train400Depth/
 *~
