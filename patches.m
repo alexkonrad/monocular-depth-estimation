@@ -8,7 +8,7 @@ function [ca] = patches(image, blockSizeR, blockSizeC)
 %
 % Outputs:
 %     p: Cell array of patches
-[rows columns numberOfColorBands] = size(image);
+[N rows columns numberOfColorBands] = size(image);
 
 % Figure out the size of each block in rows.
 % Most will be blockSizeR but there may be a remainder amount of less than that.
@@ -24,9 +24,9 @@ blockVectorC = [blockSizeC * ones(1, wholeBlockCols), rem(columns, blockSizeC)];
 % This line is where the image is actually divided up into blocks.
 if numberOfColorBands > 1
     % It's a color image.
-    ca = mat2cell(image, blockVectorR, blockVectorC, numberOfColorBands);
+    ca = mat2cell(image, N, blockVectorR, blockVectorC, numberOfColorBands);
 else
-    ca = mat2cell(image, blockVectorR, blockVectorC);
+    ca = mat2cell(image, N, blockVectorR, blockVectorC);
 end
 
 end
