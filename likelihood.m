@@ -55,7 +55,7 @@ for n = 1:size(X,1)
     for h = 1:H
         for w = 1:W
             x = squeeze(X(n,h,w,:))';
-            grad = grad + ((d_1(n,h,w) - x*theta)*x)' ./ alpha_1^2;    
+            grad = grad - ((d_1(n,h,w) - x*theta)*x)' ./ alpha_1^2;    
     
         end
     end
