@@ -27,7 +27,7 @@ for epoch = 1:epochs
     data(:,:,:,size(xAbs,4)+1:end) = depths;
 
     
-    funLL = @(theta)likelihood(theta, data);
+    funLL = @(theta)likelihood2(theta, data);
 
 
     thetaML = L1General2_TMP(funLL, thetaML, lambdaML);

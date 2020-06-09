@@ -25,16 +25,16 @@ alpha_2 = 1;
 
 Xperm = permute(X,[4 1 2 3]);
 thetaX = squeeze(sum(theta .* Xperm, 1));
-term1 = (d(:,:,:,1) - thetaX).^2 / (2 * alpha_1^2);
+term1 = ((d(:,:,:,1) - thetaX).^2) / (2 * alpha_1^2);
 sumTerm1 = sum(term1, 1:3);
 dd = permute(d, [2 3 1 4]);
 denom = 2*alpha_2^2;
-d1 = cat(1, dd(1,:,:,:), diff(dd)).^2;
-d2 = cat(2, diff(dd,1,2), dd(:,end,:,:)).^2;
-d3 = cat(1, flip(diff(flip(dd,1),1)), dd(end,:,:,:)).^2;
-d4 = cat(2, dd(:,1,:,:), flip(diff(flip(dd,2),1,2),2)).^2;
-term2 = (d1+d2+d3+d4)/denom;
+d1 = cat(1, dd(1,:,:,:), diff(dd)).^2/denom;
+d2 = cat(2, diff(dd,1,2), dd(:,end,:,:)).^2/denom;
+d3 = cat(1, flip(diff(flip(dd,1),1)), dd(end,:,:,:)).^2/denom;
+d4 = cat(2, dd(:,1,:,:), flip(diff(flip(dd,2),1,2),2)).^2/denom;
+term2 = (d1+d2+d3+d4);
 sumTerm2 = sum(term2, 1:4);
-ll = -(sumTerm1 + sumTerm2);
-grad = squeeze(sum((2*term1) .* X, 1:3));
+ll = (sumTerm1 + sumTerm2);
+grad = -squeeze(sum(((d(:,:,:,1)-thetaX).*X)./alpha_1^2, 1:3));
 end
