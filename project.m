@@ -2,7 +2,7 @@
 clear
 imgDir = strcat(pwd, '/Train400Img/');
 depthDir = strcat(pwd, '/Train400Depth/');
-batchSize = 2;
+batchSize = 50;
 height = 24*9;
 width = 18*9;
 originalImgHeight = 24*9*2;
@@ -25,3 +25,5 @@ lambdaML = zeros(size(thetaML));
     
     thetaML = X \ Y;
     
+
+   
