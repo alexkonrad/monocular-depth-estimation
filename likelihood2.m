@@ -1,11 +1,12 @@
-function [ll,grad] = likelihood2(theta, data)
-% [ll,grad] = likelihood(theta, data, L, N)
+function [ll,grad] = likelihood2(theta, X, Y, xPerm, yPerm)
+% [ll,grad] = likelihood(theta, X, L, N)
 % Compute the Negative log-likelihood and gradient for jointly gaussian model
 % 
 % Inputs:
 %    theta: Current estimate of the parameters of the gaussian model.(L,1) 
-%    data: feature vectors and depths for all patches in the dataset
-%    (N,H,W,L+3), N images, H*W patches, L depth features, d true depths
+%    X: feature vectors for all patches in the dataset
+%    (N,H,W,L), N images, H*W patches, L depth features
+%    Y: Ground truth depths
 %    
 %    M: number of patches per image
 %    neighbours : cell of arrays, listing neighbours of each patch
@@ -13,28 +14,33 @@ function [ll,grad] = likelihood2(theta, data)
 %    ll: the log-likelihood of the model
 %    grad: the gradient of the log-likelihood function for the given value
 %          of theta
-
-L = size(data,4)-3;        %Depth features
-H = size(data,2);
-W = size(data,3);
-d = data(:,:,:,L+1:end);      %depth values at the smallest scale(N,M,3)
-X = data(:,:,:,1:L);    %features of images' patches (N,M,L)
-alpha_1 = 1;            % variances (assumed to be constant for now)
+alpha_1 = 1;
 alpha_2 = 1;
+% 
+% if nargin < 5
+%   yPerm = permute(Y,[2 3 1 4]);
+% end
+% if nargin < 4
+%   xPerm = permute(X, [4 1 2 3]);
+% end
 
+X = permute(X, [4 1 2 3]);
+thetaX = squeeze(sum(theta .* X, 1));
+residual = Y(:,:,:,1)-thetaX;
+unary = residual.^2 / (2 * alpha_1^2);
+sumUnary = sum(unary, 1:3);
 
-Xperm = permute(X,[4 1 2 3]);
-thetaX = squeeze(sum(theta .* Xperm, 1));
-term1 = ((d(:,:,:,1) - thetaX).^2) / (2 * alpha_1^2);
-sumTerm1 = sum(term1, 1:3);
-dd = permute(d, [2 3 1 4]);
+Y = permute(Y,[2 3 1 4]);
 denom = 2*alpha_2^2;
-d1 = cat(1, dd(1,:,:,:), diff(dd)).^2/denom;
-d2 = cat(2, diff(dd,1,2), dd(:,end,:,:)).^2/denom;
-d3 = cat(1, flip(diff(flip(dd,1),1)), dd(end,:,:,:)).^2/denom;
-d4 = cat(2, dd(:,1,:,:), flip(diff(flip(dd,2),1,2),2)).^2/denom;
-term2 = (d1+d2+d3+d4);
-sumTerm2 = sum(term2, 1:4);
-ll = (sumTerm1 + sumTerm2);
-grad = -squeeze(sum(((d(:,:,:,1)-thetaX).*X)./alpha_1^2, 1:3));
+up = cat(1, Y(1,:,:,:), diff(Y)).^2/denom;
+left = cat(2, diff(Y,1,2), Y(:,end,:,:)).^2/denom;
+down = cat(1, flip(diff(flip(Y,1),1)), Y(end,:,:,:)).^2/denom;
+right = cat(2, Y(:,1,:,:), flip(diff(flip(Y,2),1,2),2)).^2/denom;
+binary = up+left+down+right;
+sumBinary = sum(binary, 1:4);
+
+X = ipermute(X, [4 1 2 3]);
+
+ll = sumUnary + sumBinary;
+grad = -squeeze(sum((X.*residual)./alpha_1^2, 1:3));
 end
