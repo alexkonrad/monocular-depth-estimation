@@ -1,4 +1,4 @@
-function [ll,grad] = likelihood2(theta, X, Y, xPerm, yPerm)
+function [ll,grad] = likelihood2(theta, X, Y)
 % [ll,grad] = likelihood(theta, X, L, N)
 % Compute the Negative log-likelihood and gradient for jointly gaussian model
 % 

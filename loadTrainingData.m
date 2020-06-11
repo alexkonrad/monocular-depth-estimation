@@ -1,4 +1,4 @@
-function [trainX, trainY] = loadTrainingData(imgDir, depthDir, N,...
+function [trainX, trainY] = loadTrainingData(imgDir, depthDir, N, offset,...
  height, width, originalImageHeight, originalImageWidth)
 % Load image and depth training data from folders
 %
@@ -6,6 +6,7 @@ function [trainX, trainY] = loadTrainingData(imgDir, depthDir, N,...
 %     imgDir: directory path to training images data
 %     depthDir: directory path to training images depths
 %     N: number of images to load (set to 0 to load all images)
+%     offset: offset of images to load
 %     height:  height to resize depth maps to
 %     width: width to resize depth maps to
 %     originalImageHeight: original heights of images
@@ -20,10 +21,15 @@ if N == 0
   N = numel(trainImgFiles);
 end
 
+if offset > numel(trainImgFiles)
+  return
+end
+
 trainX = zeros(N,originalImageHeight,originalImageWidth,3);
 trainY = zeros(N,height,width);
 
 for i = 1:N
+  i = i + offset;
   imgFilename = strcat(imgDir, trainImgFiles(i).name);
   depthFilename = strcat(depthDir, trainDepthFiles(i).name);
   img = im2double(rgb2ycbcr(imread(imgFilename)));

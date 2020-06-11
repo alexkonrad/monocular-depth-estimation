@@ -1,13 +1,17 @@
 %% Clear variables
 clear
-imgDir = strcat(pwd, '/Train400Img/');
-depthDir = strcat(pwd, '/Train400Depth/');
-batchSize = 10;
-height = 24*9;
-width = 18*9;
-originalImgHeight = 24*9*2;
-originalImgWidth = 18*9*2;
-epochs = 50;
+
+%% Generate features
+
+genFeaturesBatch(5);
+
+%% Train
+
+thetaML = ones(646,1);    
+lambdaML = zeros(size(thetaML));
+fOptions.maxIter = 10;
+funLL = @(theta)likelihoodBatch(theta);
+thetaML = L1General2_PSSgb(funLL, thetaML, lambdaML, fOptions);
 
 %% Load training data
 thetaML = ones(646,1);    
