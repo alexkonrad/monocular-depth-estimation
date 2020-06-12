@@ -1,8 +1,10 @@
-idx = 8;
+idx = 16;
 x = xAbs(idx,:,:,:);
 x = reshape(x,[],646);
+
 y  = x*thetaML ;
-y = reshape(y,216,162);
+% y = reshape(y,216,162);
+y = reshape(y,height,width);
 
 subplot(3,3,1);
 imagesc(squeeze(trainX(idx,:,:,:)));

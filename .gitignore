@@ -4,5 +4,7 @@ depth/
 depth_selection/
 Train400Img/
 Train400Depth/
+Test134/
+TestDepth134/
 data/
 *~

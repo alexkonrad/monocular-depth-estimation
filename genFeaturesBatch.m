@@ -13,7 +13,7 @@ end
 N = numel(dir(fullfile(imgDir, '*.jpg')));
 fprintf(['Generating features for ' num2str(N) ' examples, batch size'...
   num2str(batchSize) '\n']);
-i = 1
+i = 1;
 for offset = 0:batchSize:N-1
   fprintf(['Generating features for ' num2str(offset+1) '-' num2str(offset+batchSize) '\n']);
   fprintf('Loading files...\n');

@@ -29,9 +29,9 @@ trainX = zeros(N,originalImageHeight,originalImageWidth,3);
 trainY = zeros(N,height,width);
 
 for i = 1:N
-  i = i + offset;
-  imgFilename = strcat(imgDir, trainImgFiles(i).name);
-  depthFilename = strcat(depthDir, trainDepthFiles(i).name);
+  idx = i + offset;
+  imgFilename = strcat(imgDir, trainImgFiles(idx).name);
+  depthFilename = strcat(depthDir, trainDepthFiles(idx).name);
   img = im2double(rgb2ycbcr(imread(imgFilename)));
   resizedImg = imresize(img, [originalImageHeight originalImageWidth]);
   trainX(i,:,:,:) = resizedImg;
